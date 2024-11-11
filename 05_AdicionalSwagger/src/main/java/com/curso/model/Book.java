@@ -2,14 +2,17 @@ package com.curso.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Objects;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 @Entity
 @Table(name="tb_book")
@@ -20,12 +23,15 @@ public class Book implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String author;
-	private LocalDateTime launchDate;
+	
+	@Column(name="launch_date")
+	@Temporal(TemporalType.DATE)
+	private Date launchDate;
 	private BigDecimal price;
 	private String title;
 	
 	public Book() {}
-	public Book(Long id, String author, LocalDateTime launchDate, BigDecimal price, String title) {
+	public Book(Long id, String author, Date launchDate, BigDecimal price, String title) {
 		super();
 		this.id = id;
 		this.author = author;
@@ -45,10 +51,10 @@ public class Book implements Serializable{
 	public void setAuthor(String author) {
 		this.author = author;
 	}
-	public LocalDateTime getLaunchDate() {
+	public Date getLaunchDate() {
 		return launchDate;
 	}
-	public void setLaunchDate(LocalDateTime launchDate) {
+	public void setLaunchDate(Date launchDate) {
 		this.launchDate = launchDate;
 	}
 	public BigDecimal getPrice() {

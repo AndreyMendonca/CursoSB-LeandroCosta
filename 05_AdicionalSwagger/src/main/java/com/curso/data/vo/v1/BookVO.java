@@ -32,10 +32,10 @@ public class BookVO extends RepresentationModel<BookVO>  implements Serializable
 		this.price = price;
 		this.title = title;
 	}
-	public Long getId() {
+	public Long getKey() {
 		return key;
 	}
-	public void setId(Long key) {
+	public void setKey(Long key) {
 		this.key = key;
 	}
 	public String getAuthor() {
