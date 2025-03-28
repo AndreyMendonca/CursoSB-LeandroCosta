@@ -49,7 +49,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     }
 
     @ExceptionHandler(FileStorageException.class)
-    public final ResponseEntity<ExceptionResponse> handleFileStorageExceptionn(
+    public final ResponseEntity<ExceptionResponse> handleFileStorageException(
             Exception ex, WebRequest request){
 
         ExceptionResponse exceptionResponse = new ExceptionResponse(

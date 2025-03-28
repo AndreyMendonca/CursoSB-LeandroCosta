@@ -1,8 +1,11 @@
 package com.Erudio.demo.services;
 
 import com.Erudio.demo.config.FileStorageConfig;
+import com.Erudio.demo.exception.FileNotFoundException;
 import com.Erudio.demo.exception.FileStorageException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,6 +42,20 @@ public class FileStorageService {
             return fileName;
         }catch (Exception e){
             throw new FileStorageException("Não foi possivel salvar o arquivo" + fileName + ". Tente novamente", e);
+        }
+    }
+
+    public Resource loadFileAsResource(String fileName){
+        try {
+            Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+            if(resource.exists()){
+                return resource;
+            }else{
+                throw new FileNotFoundException("File not found" + fileName);
+            }
+        }catch(Exception e){
+            throw new FileNotFoundException("File not found " +  fileName, e);
         }
     }
 }
