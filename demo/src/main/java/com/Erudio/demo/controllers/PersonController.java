@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -63,5 +64,9 @@ public class PersonController {
         return ResponseEntity.ok(service.findAllPaginadoOrdenado(pageable));
     }
 
+    @PostMapping("/massCreation")
+    public List<Person> massCreation(@RequestParam("file") MultipartFile file){
+        return service.massCreation(file);
+    }
 
 }

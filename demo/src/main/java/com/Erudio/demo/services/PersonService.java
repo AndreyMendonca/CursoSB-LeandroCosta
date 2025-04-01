@@ -1,18 +1,28 @@
 package com.Erudio.demo.services;
 
 import com.Erudio.demo.entities.Person;
+import com.Erudio.demo.exception.BadRequestException;
+import com.Erudio.demo.exception.FileStorageException;
+import com.Erudio.demo.file.importer.contract.FileImporter;
+import com.Erudio.demo.file.importer.factory.FileImporterFactory;
 import com.Erudio.demo.repositories.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PersonService {
     @Autowired
     private PersonRepository repository;
+
+    @Autowired
+    FileImporterFactory importer;
 
     public Person save(Person person){
         return repository.save(person);
@@ -41,5 +51,24 @@ public class PersonService {
     public Page<Person> findAllPaginadoOrdenado(Pageable pageable){
         var people = repository.findAll(pageable);
         return people;
+    }
+
+    public List<Person> massCreation(MultipartFile file){
+
+        if(file.isEmpty()) throw new BadRequestException("file is invalid");
+
+        try(InputStream inputStream = file.getInputStream()){
+            String filename = Optional.ofNullable(file.getOriginalFilename())
+                    .orElseThrow(()-> new BadRequestException("Filename cannot be null"));
+
+            FileImporter importer = this.importer.getImporter(filename);
+
+            List<Person> entities = importer.importFile(inputStream);
+
+            return repository.saveAll(entities);
+        } catch (Exception e) {
+            throw new FileStorageException("Erro ao processar arquivo");
+        }
+
     }
 }
