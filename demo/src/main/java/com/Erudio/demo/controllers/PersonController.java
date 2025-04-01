@@ -1,12 +1,17 @@
 package com.Erudio.demo.controllers;
 
 import com.Erudio.demo.entities.Person;
+import com.Erudio.demo.file.exporter.MediaTypes;
 import com.Erudio.demo.services.PersonService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -67,6 +72,23 @@ public class PersonController {
     @PostMapping("/massCreation")
     public List<Person> massCreation(@RequestParam("file") MultipartFile file){
         return service.massCreation(file);
+    }
+
+    @GetMapping("/exportPage")
+    public ResponseEntity<Resource> exportPage(HttpServletRequest request){
+        String acceptHeader = request.getHeader(HttpHeaders.ACCEPT);
+        Resource file = service.exportPage(acceptHeader);
+
+        var contentType = acceptHeader != null ? acceptHeader : "application/octet-stream";
+        var fileExtension = MediaTypes.APPLICATION_XLSX_VALUE.equalsIgnoreCase(acceptHeader) ? ".xlsx" : ".csv";
+        var filename = "peope_exported" + fileExtension;
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + filename+"\""
+                ).body(file);
     }
 
 }

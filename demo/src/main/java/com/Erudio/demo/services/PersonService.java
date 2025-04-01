@@ -3,10 +3,13 @@ package com.Erudio.demo.services;
 import com.Erudio.demo.entities.Person;
 import com.Erudio.demo.exception.BadRequestException;
 import com.Erudio.demo.exception.FileStorageException;
+import com.Erudio.demo.file.exporter.contract.FileExporter;
+import com.Erudio.demo.file.exporter.factory.FileExporterFactory;
 import com.Erudio.demo.file.importer.contract.FileImporter;
 import com.Erudio.demo.file.importer.factory.FileImporterFactory;
 import com.Erudio.demo.repositories.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,6 +26,9 @@ public class PersonService {
 
     @Autowired
     FileImporterFactory importer;
+
+    @Autowired
+    FileExporterFactory exporter;
 
     public Person save(Person person){
         return repository.save(person);
@@ -69,6 +75,16 @@ public class PersonService {
         } catch (Exception e) {
             throw new FileStorageException("Erro ao processar arquivo");
         }
+    }
 
+    public Resource exportPage(String acceptHeader){
+        var people = repository.findAll();
+
+        try {
+            FileExporter exporter = this.exporter.getExporter(acceptHeader);
+            return exporter.exportFile(people);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
