@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/person")
@@ -79,8 +80,13 @@ public class PersonController {
         String acceptHeader = request.getHeader(HttpHeaders.ACCEPT);
         Resource file = service.exportPage(acceptHeader);
 
+        Map<String, String> extensionMap = Map.of(
+                MediaTypes.APPLICATION_PDF_VALUE, ".pdf",
+                MediaTypes.APPLICATION_CSV_VALUE, ".csv",
+                MediaTypes.APPLICATION_XLSX_VALUE, ".xlsx"
+        );
+        var fileExtension = extensionMap.getOrDefault(acceptHeader, "");
         var contentType = acceptHeader != null ? acceptHeader : "application/octet-stream";
-        var fileExtension = MediaTypes.APPLICATION_XLSX_VALUE.equalsIgnoreCase(acceptHeader) ? ".xlsx" : ".csv";
         var filename = "peope_exported" + fileExtension;
 
         return ResponseEntity.ok()

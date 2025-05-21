@@ -4,6 +4,7 @@ import com.Erudio.demo.exception.BadRequestException;
 import com.Erudio.demo.file.exporter.MediaTypes;
 import com.Erudio.demo.file.exporter.contract.FileExporter;
 import com.Erudio.demo.file.exporter.impl.CsvExporter;
+import com.Erudio.demo.file.exporter.impl.PdfExporter;
 import com.Erudio.demo.file.exporter.impl.XlsxExporter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,8 @@ public class FileExporterFactory {
             return context.getBean(XlsxExporter.class);
         } else if (acceptHeader.equalsIgnoreCase(MediaTypes.APPLICATION_CSV_VALUE)) {
             return context.getBean(CsvExporter.class);
+        }    else if (acceptHeader.equalsIgnoreCase(MediaTypes.APPLICATION_PDF_VALUE)) {
+                return context.getBean(PdfExporter.class);
         }else{
             throw new BadRequestException("Formato invalido");
         }
